@@ -2,11 +2,15 @@
   "name": "iyb-create-checkout",
   "version": "0.0.0",
   "devDependencies": {
+    "dotenv-vault": "^1.18.0",
     "wrangler": "2.13.0"
   },
   "private": true,
   "scripts": {
-    "start": "wrangler dev",
+    "start": "npx dotenv-vault pull && mv .env .dev.vars && wrangler dev",
     "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "stripe": "^11.17.0"
   }
 }

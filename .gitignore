@@ -170,3 +170,8 @@ dist
 
 .dev.vars
 .wrangler/
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
