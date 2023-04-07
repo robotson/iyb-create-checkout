@@ -33,8 +33,8 @@ async function handleRequest(request, env) {
         const payload = {
           line_items: line_items,
           mode: 'payment',
-          success_url: `${env.STRIPE_CALLBACK_DOMAIN}/success.html`,
-          cancel_url: `${env.STRIPE_CALLBACK_DOMAIN}/cancel.html`,
+          success_url: `${env.STRIPE_CALLBACK_DOMAIN}/confirmation`,
+          cancel_url: `${env.STRIPE_CALLBACK_DOMAIN}`,
           shipping_options: shipping_options,
           shipping_address_collection: {allowed_countries: ['US']},
           payment_method_types: ['card','link','cashapp'],
