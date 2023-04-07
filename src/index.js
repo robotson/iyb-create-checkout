@@ -9,12 +9,11 @@ async function handleRequest(request, env) {
       try {
         // Extract the POST data as a JSON object
         const { cart } = await request.json();
-        
+        const shipping_data = [];
         const line_items = [];
         // get prices for each item and build line_items payload
         // also collect shipping data:
-        const shipping_data = [];
-
+        // make sure to parse the shipping metadata in to Numbers!
         for(let item of cart){
           const priceList = await stripe.prices.list({product: item.id, active:true, limit:1})
           const price = priceList.data[0];
@@ -22,29 +21,28 @@ async function handleRequest(request, env) {
           shipping_data.push({
             price: price.id,
             quantity: item.quantity,
-            us_days_max: price.metadata.us_days_max,
-            us_days_min: price.metadata.us_days_min,
-            us_ship_additional: price.metadata.us_ship_additional,
-            us_ship_rate: price.metadata.us_ship_rate,
+            us_days_max: Number(price.metadata.us_days_max),
+            us_days_min: Number(price.metadata.us_days_min),
+            us_ship_additional: Number(price.metadata.us_ship_additional),
+            us_ship_rate: Number(price.metadata.us_ship_rate),
           })
         }
-        //console.log(line_items);
-
         // create shipping options payload:
         const shipping_options = getShippingOptions(shipping_data);
-
-        const session = await stripe.checkout.sessions.create({
+        // package the checkout session payload and create it:
+        const payload = {
           line_items: line_items,
           mode: 'payment',
           success_url: `${env.STRIPE_CALLBACK_DOMAIN}/success.html`,
           cancel_url: `${env.STRIPE_CALLBACK_DOMAIN}/cancel.html`,
           shipping_options: shipping_options,
           shipping_address_collection: {allowed_countries: ['US']},
-        });
+          payment_method_types: ['card','link','cashapp'],
+        }
+        const session = await stripe.checkout.sessions.create(payload);
 
+        // Send back the checkout session URL to our app caller
         const json = JSON.stringify({url: session.url});
-
-      
         return new Response(json, {
           headers: {
             "content-type": "application/json;charset=UTF-8",
