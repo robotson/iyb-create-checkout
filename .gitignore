@@ -175,3 +175,5 @@ dist
 .flaskenv*
 !.env.project
 !.env.vault
+
+.DS_Store
