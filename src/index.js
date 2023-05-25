@@ -41,7 +41,7 @@ async function handleRequest(request, env) {
         cancel_url: `${env.STRIPE_CALLBACK_DOMAIN}/cart`,
         shipping_options: shipping_options,
         shipping_address_collection: { allowed_countries: ["US"] },
-        payment_method_types: ["card", "link", "cashapp"],
+        payment_method_types: ["card"],
       };
       const session = await stripe.checkout.sessions.create(payload);
 
